@@ -1,9 +1,11 @@
 package com.example.demo;
 
+import com.example.demo.sbb.DemoApplication;
 import com.example.demo.sbb.answer.Answer;
 import com.example.demo.sbb.answer.AnswerRepository;
 import com.example.demo.sbb.question.Question;
 import com.example.demo.sbb.question.QuestionRepository;
+import com.example.demo.sbb.question.QuestionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +18,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
+@SpringBootTest(classes= DemoApplication.class)
 class DemoApplicationTests {
 
     @Autowired
@@ -24,6 +26,9 @@ class DemoApplicationTests {
 
     @Autowired
     private AnswerRepository answerRepository;
+
+    @Autowired
+    private QuestionService questionService;
 
     @Test
     void testJpa(){
@@ -124,6 +129,16 @@ class DemoApplicationTests {
         List<Answer> answerList = q.getAnswerList();
         assertEquals(1, answerList.size());
         assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
+
+    }
+
+    @Test
+    void testJpa2(){
+        for (int i = 1; i <= 300; i++){
+            String subject = String.format("테스트 데이터입니다.:[%03d]", i);
+            String content = "내용무";
+            this.questionService.create(subject, content);
+        }
 
     }
 }
