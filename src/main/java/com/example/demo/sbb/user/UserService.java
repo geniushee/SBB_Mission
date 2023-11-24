@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public SiteUser create(String username, String email, String password){
+    public SiteUser create(String username, String password, String email){
         SiteUser user = new SiteUser();
         user.setUsername(username);
         user.setEmail(email);
