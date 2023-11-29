@@ -14,6 +14,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    public long count() {
+        return this.userRepository.count();
+    }
+
     public SiteUser create(String username, String password, String email){
         SiteUser user = new SiteUser();
         user.setUsername(username);
