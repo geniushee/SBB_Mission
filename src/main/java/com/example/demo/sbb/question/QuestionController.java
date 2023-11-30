@@ -1,6 +1,8 @@
 package com.example.demo.sbb.question;
 
+import com.example.demo.sbb.answer.Answer;
 import com.example.demo.sbb.answer.AnswerForm;
+import com.example.demo.sbb.answer.AnswerService;
 import com.example.demo.sbb.user.SiteUser;
 import com.example.demo.sbb.user.UserService;
 import jakarta.validation.Valid;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.List;
 
 @RequestMapping("/question")
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ import java.security.Principal;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final AnswerService answerService;
     private final UserService userService;
 
     @GetMapping("/list")
@@ -35,9 +39,13 @@ public class QuestionController {
 
     @GetMapping("/detail/{id}")
     public String detail(Model model, @PathVariable("id") Integer id,
+                         @RequestParam(value="page", defaultValue = "0") int page,
                          AnswerForm answerForm){
         Question question = questionService.getQuestion(id);
+        List<Answer> answerList =  question.getAnswerList();
+        Page<Answer> answerPaging = answerService.paging(answerList, page);
         model.addAttribute("question", question);
+        model.addAttribute("answer", answerPaging);
         return "resource/question_detail";
     }
 
