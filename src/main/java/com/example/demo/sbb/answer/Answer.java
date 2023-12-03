@@ -1,5 +1,6 @@
 package com.example.demo.sbb.answer;
 
+import com.example.demo.sbb.comment.Comment;
 import com.example.demo.sbb.question.Question;
 import com.example.demo.sbb.user.SiteUser;
 import jakarta.persistence.*;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -32,4 +34,7 @@ public class Answer {
 
     @ManyToMany
     Set<SiteUser> voter;
+
+    @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 }
