@@ -12,7 +12,8 @@
                     <div class="mb-2">modified at</div>
                     <div th:text="${#temporals.format(question.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
                     <div class="badge db-light text-dark p-2 text-start">
-                    <div class="mb-2"><span th:if="${question.author != null}" th:text="${question.author.username}"></span></div>
+                        <div class="mb-2"><span th:if="${question.author != null}"
+                                                th:text="${question.author.username}"></span></div>
                     </div>
                     <div th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></div>
                 </div>
@@ -24,21 +25,21 @@
                     <span class="badge rounded-pill bg-success" th:text="${#lists.size(question.voter)}"></span>
                 </a>
                 <a th:href="@{|/question/modify/${question.id}|}" class="btn btn-sm btn-outline-secondary"
-                sec:authorize="isAuthenticated()"
-                th:if="${question.author.username != null and #authentication.getPrincipal().getUsername() == question.author.username}"
-                th:text="수정"></a>
+                   sec:authorize="isAuthenticated()"
+                   th:if="${question.author.username != null and #authentication.getPrincipal().getUsername() == question.author.username}"
+                   th:text="수정"></a>
                 <a href="javascript:void(0);" th:data-uri="@{|/question/delete/${question.id}|}"
-                class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
-                th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
+                   class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+                   th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
                    th:text="삭제"></a>
-                </div>
+            </div>
         </div>
     </div>
 
 
     <h5 class="border-bottom my-3 py-2"
-        th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
-    <div class="card my-3" th:each="answer : ${question.answerList}">
+        th:text="|${answerPaging.getTotalElements}개의 답변이 있습니다.|"></h5>
+    <div class="card my-3" th:each="answer : ${answerPaging}">
         <a th:id="|answer_${answer.id}|"></a>
         <div class="card-body">
             <div class="card-text" th:utext="${@commonUtil.markdown(answer.content)}"></div>
@@ -59,20 +60,37 @@
                     <span class="badge rounded-pill bg-success" th:text="${#lists.size(answer.voter)}"></span>
                 </a>
                 <a th:href="@{|/answer/modify/${answer.id}|}" class="btn btn-sm btn-outline-secondary"
-                sec:authorize="isAuthenticated()"
-                th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
-                th:text="수정"></a>
+                   sec:authorize="isAuthenticated()"
+                   th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
+                   th:text="수정"></a>
                 <a href="javascript:void(0);" th:data-uri="@{|/answer/delete/${answer.id}|}"
-                class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
-                th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
-                th:text="삭제"></a>
+                   class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+                   th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
+                   th:text="삭제"></a>
             </div>
         </div>
     </div>
+    <div th:if="${!answerPaging.isEmpty()}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${!answerPaging.hasPrevious()} ? 'disabled'">
+                <a th:href="@{|?page=${answerPaging.number - 1}|}" class="page-link"><span>이전</span></a>
+            </li>
+            <li class="page-item" th:each="answerPageNum : ${#numbers.sequence(0,answerPaging.totalPages - 1)}"
+                th:classappend="${answerPageNum == answerPaging.number} ? 'active'">
+                <a class="page-link" th:href="@{|?page=${answerPageNum}|}" th:text="${answerPageNum}"
+                   th:if="${answerPaging.number - 2 <= answerPageNum and answerPaging.number + 2 >= answerPageNum}"></a>
+            </li>
+            <li class="page-item" th:classappend="${!answerPaging.hasNext()} ? 'disabled'">
+                <a th:href="@{|?page=${answerPaging.number + 1}|}" class="page-link"><span>다음</span></a>
+            </li>
+        </ul>
+    </div>
+
 
     <form th:action="@{|/answer/create/${question.id}|}" th:object="${answerForm}" method="post" class="my-3">
         <div th:replace="~{global/form_errors :: formErrorsFragment}"></div>
-        <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" rows="10" class="form-control"></textarea>
+        <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" rows="10"
+                  class="form-control"></textarea>
         <textarea sec:authorize="isAuthenticated()" th:field="*{content}" rows="10" class="form-control"></textarea>
         <input type="submit" value="답변등록" class="btn btn-primary my-2">
     </form>
@@ -80,19 +98,21 @@
 </div>
 <script layout:fragment="script" type="text/javascript">
     const delete_elements = document.getElementsByClassName("delete");
-    Array.from(delete_elements).forEach(function(element) {
-        element.addEventListener('click', function() {
-            if(confirm("정말로 삭제하시겠습니까?")) {
+    Array.from(delete_elements).forEach(function (element) {
+        element.addEventListener('click', function () {
+            if (confirm("정말로 삭제하시겠습니까?")) {
                 location.href = this.dataset.uri;
-            };
+            }
+            ;
         });
     });
     const recommend_elements = document.getElementsByClassName("recommend");
-    Array.from(recommend_elements).forEach(function(element) {
-        element.addEventListener('click', function() {
-            if(confirm("정말로 추천하시겠습니까?")) {
+    Array.from(recommend_elements).forEach(function (element) {
+        element.addEventListener('click', function () {
+            if (confirm("정말로 추천하시겠습니까?")) {
                 location.href = this.dataset.uri;
-            };
+            }
+            ;
         });
     });
 </script>

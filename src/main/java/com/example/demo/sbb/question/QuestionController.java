@@ -45,7 +45,7 @@ public class QuestionController {
         List<Answer> answerList =  question.getAnswerList();
         Page<Answer> answerPaging = answerService.paging(answerList, page);
         model.addAttribute("question", question);
-        model.addAttribute("answer", answerPaging);
+        model.addAttribute("answerPaging", answerPaging);
         return "resource/question_detail";
     }
 

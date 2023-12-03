@@ -53,7 +53,7 @@ public class AnswerService {
     }
 
     public <Answer> Page<Answer> paging(List<Answer> answerList, int page){
-        final int size = 5; // 한 페이지에 들어가는 content 수
+        final int size = 2; // 한 페이지에 들어가는 content 수
 
         int start = Math.toIntExact(size * (long) page); // 페이지의 시작 컨텐츠 번호
         int end = Math.min(start + size, answerList.size()); // 페이지의 마지막 컨텐츠 번호
